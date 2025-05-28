@@ -3,24 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\User;
 
-class Patient extends Model
+class Role extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
+    protected $primaryKey = 'roles_id';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'user_id',
-        'first_name',
-        'last_name',
-        'email',
-        'phone_num'
+        'roles_name',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    /**
+     * Get the users that belong to the role.
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class, 'roles_id');
+    }
 }
-
-?>

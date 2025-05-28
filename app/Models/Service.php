@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\User;
+use App\Models\Dentist;
 use App\Models\Appointment;
 
-class Patient extends Model
+class Service extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'patient_id';
+    protected $primaryKey = 'service_id';
 
     /**
      * The attributes that are mass assignable.
@@ -21,26 +21,23 @@ class Patient extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
-        'first_name',
-        'last_name',
-        'email',
-        'phone_num',
+        'dentist_id',
+        'service_name',
     ];
 
     /**
-     * Get the user that the patient belongs to.
+     * Get the dentist that the service belongs to.
      */
-    public function user(): BelongsTo
+    public function dentist(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Dentist::class, 'dentist_id');
     }
 
     /**
-     * Get the appointments that the patient has.
+     * Get the appointments that the service has.
      */
     public function appointments(): HasMany
     {
-        return $this->hasMany(Appointment::class, 'patient_id');
+        return $this->hasMany(Appointment::class, 'service_id');
     }
 }

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Dentist;
+use App\Models\Role;
+use App\Models\Status;
 
 class User extends Authenticatable
 {
@@ -18,15 +22,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-       'first_name',
-        'last_name',
-        'email',
-        'phone_num',
-        'password',
-        'dentist_id',
-        'roles_id',
-        'status_id'
-    ];
+    'dentist_id',
+    'role_id',
+    'status_id',
+    'first_name',
+    'last_name',
+    'email',
+    'phone_num',
+];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,7 +50,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // public function role(){
-    //     return $this->belongsTo(Role::class);
-    // }
+    /**
+     * Get the dentist that the user belongs to.
+     */
+    public function dentist(): BelongsTo
+    {
+        return $this->belongsTo(Dentist::class, 'dentist_id');
+    }
+
+    /**
+     * Get the role that the user belongs to.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'roles_id');
+    }
+
+    /**
+     * Get the status that the user belongs to.
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(User_status::class, 'status_id');
+    }
 }
