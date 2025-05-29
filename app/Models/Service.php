@@ -4,40 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Dentist;
-use App\Models\Appointment;
 
 class Service extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'service_id';
+    // Table name (optional if follows Laravel conventions)
+    protected $table = 'services';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Mass assignable fields
     protected $fillable = [
-        'dentist_id',
         'service_name',
     ];
 
-    /**
-     * Get the dentist that the service belongs to.
-     */
-    public function dentist(): BelongsTo
+    // If you want, you can add relationships, e.g., appointments using this service
+    public function appointments()
     {
-        return $this->belongsTo(Dentist::class, 'dentist_id');
-    }
-
-    /**
-     * Get the appointments that the service has.
-     */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(Appointment::class, 'service_id');
+        return $this->hasMany(Appointment::class);
     }
 }

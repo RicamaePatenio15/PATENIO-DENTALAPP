@@ -7,54 +7,42 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function index()
+    // GET: List all services
+    public function get()
     {
-        $services = Service::all();
-        return response()->json(['services' => $services]);
+        return response()->json(Service::all());
     }
 
-    public function store(Request $request)
+    // POST: Add a new service
+    public function add(Request $request)
     {
-        $request->validate([
-            'dentist_id' => 'required',
-            'service_name' => 'required',
+        $validated = $request->validate([
+            'service_name' => 'required|string|max:255',
         ]);
 
-        $service = Service::create($request->all());
-        return response()->json(['message' => 'Service created succesfully!', 'service' => $service]);
+        $service = Service::create($validated);
+        return response()->json($service, 201);
     }
 
-    public function show($id)
-    {
-        $service = Service::find($id);
-        if (!$service) {
-            return response()->json(['message' => 'Service not found'], 404);
-        }
-        return response()->json(['service' => $service]);
-    }
-
+    // PUT: Update an existing service
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'dentist_id' => 'required',
-            'service_name' => 'required',
+        $service = Service::findOrFail($id);
+
+        $validated = $request->validate([
+            'service_name' => 'required|string|max:255',
         ]);
 
-        $service = Service::find($id);
-        if (!$service) {
-            return response()->json(['message' => 'Service not found'], 404);
-        }
-        $service->update($request->all());
-        return response()->json(['message' => 'Service updated succesfully!', 'service' => $service]);
+        $service->update($validated);
+        return response()->json($service);
     }
 
-    public function destroy($id)
+    // DELETE: Delete a service
+    public function delete($id)
     {
-        $service = Service::find($id);
-        if (!$service) {
-            return response()->json(['message' => 'Service not found'], 404);
-        }
+        $service = Service::findOrFail($id);
         $service->delete();
-        return response()->json(['message' => 'Service deleted succesfully!']);
+
+        return response()->json(['message' => 'Service deleted successfully']);
     }
 }

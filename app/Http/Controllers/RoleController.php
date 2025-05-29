@@ -7,52 +7,42 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    public function index()
+    // GET: List all roles
+    public function get()
     {
-        $roles = Role::all();
-        return response()->json(['roles' => $roles]);
+        return response()->json(Role::all());
     }
 
-    public function store(Request $request)
+    // POST: Add a new role
+    public function add(Request $request)
     {
-        $request->validate([
-            'roles_name' => 'required',
+        $validated = $request->validate([
+            'role_name' => 'required|string|max:255',
         ]);
 
-        $role = Role::create($request->all());
-        return response()->json(['message' => 'Role created succesfully!', 'role' => $role]);
+        $role = Role::create($validated);
+        return response()->json($role, 201);
     }
 
-    public function show($id)
-    {
-        $role = Role::find($id);
-        if (!$role) {
-            return response()->json(['message' => 'Role not found'], 404);
-        }
-        return response()->json(['role' => $role]);
-    }
-
+    // PUT: Update an existing role
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'roles_name' => 'required',
+        $role = Role::findOrFail($id);
+
+        $validated = $request->validate([
+            'role_name' => 'required|string|max:255',
         ]);
 
-        $role = Role::find($id);
-        if (!$role) {
-            return response()->json(['message' => 'Role not found'], 404);
-        }
-        $role->update($request->all());
-        return response()->json(['message' => 'Role updated succesfully!', 'role' => $role]);
+        $role->update($validated);
+        return response()->json($role);
     }
 
-    public function destroy($id)
+    // DELETE: Delete a role
+    public function delete($id)
     {
-        $role = Role::find($id);
-        if (!$role) {
-            return response()->json(['message' => 'Role not found'], 404);
-        }
+        $role = Role::findOrFail($id);
         $role->delete();
-        return response()->json(['message' => 'Role deleted succesfully!']);
+
+        return response()->json(['message' => 'Role deleted successfully']);
     }
 }

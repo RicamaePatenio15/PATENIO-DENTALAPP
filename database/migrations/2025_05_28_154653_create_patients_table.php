@@ -1,35 +1,29 @@
 <?php
 
+use App\Models\Patient;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
-            $table->foreignId('status_id')->constrained('user_statuses')->onDelete('cascade');
-            $table->foreignId('dentist_id')->nullable()->constrained('dentists')->onDelete('set null');
+        Schema::create('patients', function (Blueprint $table) {
+            $table->id('patient_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('email')->nullable();
+            $table->string('email')->unique();  // optional unique constraint
             $table->string('phone_num');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        // Insert default users
-        $users = [
+        $patients = [
             [
-                'dentist_id' => null,
-                'role_id' => 1, // admin
-                'status_id' => 1, // active
+                'user_id' => null,
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john.doe@example.com',
@@ -38,9 +32,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
-                'dentist_id' => null,
-                'role_id' => 2, // dentist
-                'status_id' => 1, // active
+                'user_id' => null,
                 'first_name' => 'Jane',
                 'last_name' => 'Smith',
                 'email' => 'jane.smith@example.com',
@@ -50,16 +42,13 @@ return new class extends Migration
             ],
         ];
 
-        foreach ($users as $user) {
-            DB::table('users')->insert($user);
+        foreach ($patients as $patient) {
+            Patient::create($patient);
         }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('patients');
     }
 };

@@ -2,75 +2,55 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable; // for auth
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Dentist;
-use App\Models\Role;
-use App\Models\Status;
-
+use Laravel\Sanctum\HasApiTokens; // optional, if you use Sanctum
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-    'dentist_id',
-    'role_id',
-    'status_id',
-    'first_name',
-    'last_name',
-    'email',
-    'phone_num',
-];
+        'role_id',
+        'status_id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone_num',
+        'password',
+    ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    // Relationships
 
-    /**
-     * Get the dentist that the user belongs to.
-     */
-    public function dentist(): BelongsTo
+    public function role()
     {
-        return $this->belongsTo(Dentist::class, 'dentist_id');
+        return $this->belongsTo(Role::class);
     }
 
-    /**
-     * Get the role that the user belongs to.
-     */
-    public function role(): BelongsTo
+    public function status()
     {
-        return $this->belongsTo(Role::class, 'roles_id');
+        return $this->belongsTo(UserStatus::class, 'status_id');
     }
 
-    /**
-     * Get the status that the user belongs to.
-     */
-    public function status(): BelongsTo
+    public function appointmentsCreated() // dental staff who booked the appointment
     {
-        return $this->belongsTo(User_status::class, 'status_id');
+        return $this->hasMany(Appointment::class, 'user_id');
     }
+
+    public function dentistAppointments() // user as dentist assigned to appointment
+    {
+        return $this->hasMany(Appointment::class, 'dentist_id');
+    }
+
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
+    }
+
+
 }

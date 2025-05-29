@@ -4,23 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Patient;
-use App\Models\Dentist;
-use App\Models\User;
-use App\Models\Service;
 
 class Appointment extends Model
 {
     use HasFactory;
 
+    protected $table = 'appointments';
+
     protected $primaryKey = 'appointment_id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'patient_id',
         'dentist_id',
@@ -30,35 +22,25 @@ class Appointment extends Model
         'time',
     ];
 
-    /**
-     * Get the patient that the appointment belongs to.
-     */
-    public function patient(): BelongsTo
+    // Relationships
+
+    public function patient()
     {
-        return $this->belongsTo(Patient::class, 'patient_id');
+        return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
     }
 
-    /**
-     * Get the dentist that the appointment belongs to.
-     */
-    public function dentist(): BelongsTo
+    public function dentist()
     {
-        return $this->belongsTo(Dentist::class, 'dentist_id');
+        return $this->belongsTo(User::class, 'dentist_id', 'id');
     }
 
-    /**
-     * Get the user that the appointment belongs to.
-     */
-    public function user(): BelongsTo
+    public function user() // the staff who created the appointment
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Get the service that the appointment belongs to.
-     */
-    public function service(): BelongsTo
+    public function service()
     {
-        return $this->belongsTo(Service::class, 'service_id');
+        return $this->belongsTo(Service::class, 'service_id', 'id');
     }
 }

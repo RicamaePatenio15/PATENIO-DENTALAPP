@@ -1,7 +1,5 @@
 <?php
 
-// app/Http/Controllers/AppointmentController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
@@ -9,62 +7,62 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    public function index()
+    // Get all appointments
+    public function getAppointments()
     {
-        $appointments = Appointment::all();
-        return response()->json(['appointments' => $appointments]);
+        $appointments = Appointment::with('patient', 'dentist', 'user', 'service')->get();
+        return response()->json($appointments);
     }
 
-    public function store(Request $request)
+    // Add new appointment
+    public function addAppointment(Request $request)
     {
         $request->validate([
-            'patient_id' => 'required',
-            'dentist_id' => 'required',
-            'user_id' => 'required',
-            'service_id' => 'required',
-            'date' => 'required',
-            'time' => 'required',
+            'patient_id' => 'required|exists:patients,patient_id',
+            'dentist_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
+            'service_id' => 'required|exists:services,id',
+            'date' => 'required|date',
+            'time' => 'required|string',
         ]);
 
         $appointment = Appointment::create($request->all());
-        return response()->json(['message' => 'Appointment created succesfully!', 'appointment' => $appointment]);
+
+        return response()->json(['message' => 'Appointment created successfully', 'appointment' => $appointment], 201);
     }
 
-    public function show($id)
+    // Update appointment
+    public function updateAppointment(Request $request, $id)
     {
         $appointment = Appointment::find($id);
         if (!$appointment) {
             return response()->json(['message' => 'Appointment not found'], 404);
         }
-        return response()->json(['appointment' => $appointment]);
-    }
 
-    public function update(Request $request, $id)
-    {
         $request->validate([
-            'patient_id' => 'required',
-            'dentist_id' => 'required',
-            'user_id' => 'required',
-            'service_id' => 'required',
-            'date' => 'required',
-            'time' => 'required',
+            'patient_id' => 'sometimes|exists:patients,patient_id',
+            'dentist_id' => 'sometimes|exists:users,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'service_id' => 'sometimes|exists:services,id',
+            'date' => 'sometimes|date',
+            'time' => 'sometimes|string',
         ]);
 
-        $appointment = Appointment::find($id);
-        if (!$appointment) {
-            return response()->json(['message' => 'Appointment not found'], 404);
-        }
         $appointment->update($request->all());
-        return response()->json(['message' => 'Appointment updated succesfully!', 'appointment' => $appointment]);
+
+        return response()->json(['message' => 'Appointment updated successfully', 'appointment' => $appointment]);
     }
 
-    public function destroy($id)
+    // Delete appointment
+    public function deleteAppointment($id)
     {
         $appointment = Appointment::find($id);
         if (!$appointment) {
             return response()->json(['message' => 'Appointment not found'], 404);
         }
+
         $appointment->delete();
-        return response()->json(['message' => 'Appointment deleted succesfully!']);
+
+        return response()->json(['message' => 'Appointment deleted successfully']);
     }
 }

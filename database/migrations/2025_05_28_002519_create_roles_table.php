@@ -3,39 +3,29 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use App\Models\Role;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('role_name')->nullable();
+            $table->string('role_name');  // NOT nullable
             $table->timestamps();
         });
 
-        $roles=[
-          
-            ['name' => 'Dentist'],
-            ['name' => 'Dental Staff'],
-      
+        // Seed roles right here (optional)
+        $roles = [
+            ['role_name' => 'Dentist'],
+            ['role_name' => 'Dental Staff'],
         ];
 
         foreach ($roles as $role) {
-           Role::create($role);
+            Role::create($role);
         }
-
-        
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('roles');

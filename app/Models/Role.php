@@ -4,29 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\User;
 
 class Role extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'roles_id';
+    // Table name is 'roles' by default, so no need to specify unless different
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Mass assignable attributes
     protected $fillable = [
-        'roles_name',
+        'role_name',
     ];
 
-    /**
-     * Get the users that belong to the role.
-     */
-    public function users(): HasMany
+    // Relationships (if needed)
+    // A Role has many Users
+    public function users()
     {
-        return $this->hasMany(User::class, 'roles_id');
+        return $this->hasMany(User::class);
     }
 }
+
